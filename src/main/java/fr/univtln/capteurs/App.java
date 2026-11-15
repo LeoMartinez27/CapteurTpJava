@@ -38,6 +38,8 @@ public class App {
 
         // Affichage
         log.info("{}", network);
+        network.statistics().forEach((id, st) -> log.info("Stats {} : {}", id, st));
+        log.info("Anomalies (|z| > 2.5) : {}", network.anomalies(2.5));
         var sensorIterator = network.sensorIterator();
         while (sensorIterator.hasNext()) {
             Sensor<?> sensor = sensorIterator.next();
