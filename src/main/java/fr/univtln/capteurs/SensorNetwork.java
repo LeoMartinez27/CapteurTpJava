@@ -1,6 +1,9 @@
 package fr.univtln.capteurs;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.DoubleSummaryStatistics;
+import java.util.List;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -38,6 +41,20 @@ public class SensorNetwork {
 
     public Iterator<Sensor<?>> sensorIterator() {
         return Collections.unmodifiableMap(sensors).values().iterator();
+    }
+
+    /** Statistiques par capteur (id -> stats), dans l'unité SI de chaque capteur. */
+    public Map<String, DoubleSummaryStatistics> statistics() {
+        Map<String, DoubleSummaryStatistics> result = new LinkedHashMap<>();
+        sensors.forEach((id, sensor) -> sensor.statistics().ifPresent(st -> result.put(id, st)));
+        return result;
+    }
+
+    /** Anomalies (|z-score| > seuil) de tous les capteurs du réseau. */
+    public List<Measurement<?>> anomalies(double threshold) {
+        List<Measurement<?>> result = new ArrayList<>();
+        sensors.values().forEach(sensor -> result.addAll(sensor.anomalies(threshold)));
+        return result;
     }
 
     @Override
